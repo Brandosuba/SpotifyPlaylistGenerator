@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MP3 Player with Playlist</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        .current-song {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        audio {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">MP3 Player with Playlist</h1>
+
+        <h2 class="mb-3">Current Playlist</h2>
+        <ul class="list-group mb-4">
+            {% for song in playlist %}
+                <li class="list-group-item">{{ song }}</li>
+            {% endfor %}
+        </ul>
+
+        <h2 class="mb-3">Add a Song to the Playlist</h2>
+        <form action="/add_song" method="post" class="d-flex mb-4">
+            <select name="song" class="form-select me-2">
+                {% for song in available_songs %}
+                    <option value="{{ song }}">{{ song }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">Add Song</button>
+        </form>
+
+        <div class="d-flex justify-content-between mb-4">
+            <button onclick="shufflePlay()" class="btn btn-success">Shuffle Play</button>
+            <button onclick="window.location.href='/clear_playlist'" class="btn btn-danger">Clear Playlist</button>
+        </div>
+
+        <div class="current-song" id="currentSong">No song is currently playing</div>
+        <audio id="audioPlayer" controls>
+            <source id="audioSource" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+
+    <script>
+        async function shufflePlay() {
+            try {
+                const response = await fetch('/shuffle');
+                const data = await response.json();
+                if (data.song) {
+                    document.getElementById('currentSong').textContent = `Now playing: ${data.song}`;
+                    const audioSource = document.getElementById('audioSource');
+                    audioSource.src = `/play/${encodeURIComponent(data.song)}`;
+                    document.getElementById('audioPlayer').load();
+                    document.getElementById('audioPlayer').play();
+                } else {
+                    alert(data.error || 'An error occurred.');
+                }
+            } catch (error) {
+                console.error('Error during shuffle play:', error);
+            }
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
