@@ -1,12 +1,16 @@
-# Ignore node_modules
+<<<<<<< HEAD
+# Your local changes
 node_modules/
-
-# Ignore log files
-*.log
-
-# Ignore build directories
-/dist
-/build
-
-# Ignore environment variables
 .env
+=======
+# Remote changes
+__pycache__/
+*.log
+# Local ignores
+node_modules/
+.env
+
+# Remote ignores
+__pycache__/
+*.log
+>>>>>>> origin/main
